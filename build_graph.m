@@ -18,7 +18,7 @@ end
 % TODO: eliminate these edges
 graph = zeros(2*(H-1)*(W-1)+(H-1)*W+(W-1)*H, 3);
 cnt = 1;
-
+fprintf('building graph...\n')
 for w = 1:W
     for h = 1:H
         idx = (w-1)*H + h;   % current point index
@@ -62,6 +62,7 @@ for w = 1:W
         end
     end
 end
+fprintf('done!\n')
 
 % fprintf('%d\n%d', cnt, 4*H*W)
 

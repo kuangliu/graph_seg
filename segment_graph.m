@@ -1,4 +1,4 @@
-function ret_img = segment_graph(graph, num_nodes, K)
+function [uf, sorted_graph] = segment_graph(graph, num_nodes, K)
 %% Segment an image
 % Returns a color image representing the segmentation.
 % Inputs:
@@ -16,9 +16,10 @@ threshold = ones(num_nodes, 1) * K;
 [~, order] = sort(graph(:, 3));
 sorted_graph = graph(order, :);
 
+fprintf('segmenting...\n')
 for i = 1:num_edges
     if mod(i, 5000) == 0
-        fprintf('%d\n', i)
+        fprintf('%d/%d\n', i, num_edges)
     end
     
     edge = sorted_graph(i, :);
@@ -42,31 +43,8 @@ for i = 1:num_edges
         threshold(parent_b) = edge(3) + K / uf.sz(new_root);
     end
 end
+fprintf('done!\n')
 
-%% remove all small components
-for i = 1:num_edges
-    if mod(i, 5000) == 0
-        fprintf('%d\n', i)
-    end
-    edge = sorted_graph(i, :);
-    a = uf.find_id(edge(1));
-    b = uf.find_id(edge(2));
-    
-    if a~=b && (uf.sz(a) < min_size || uf.sz(b) < min_size)
-        uf.union(a, b);
-    end
-end
-
-%% save result image
-color_map = uint8(randi([0, 255], num_nodes, 3));
-
-ret_img = zeros(H, W, 3, 'uint8');
-for w = 1:W
-    for h = 1:H
-        id = uf.find_id((w-1)*H+h);
-        ret_img(h, w, :) = reshape(color_map(id, :), [1,1,3]);
-    end
-end
 
 
 
